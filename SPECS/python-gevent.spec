@@ -11,7 +11,7 @@
 
 Name:          python-%{modname}
 Version:       1.2.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       A coroutine-based Python networking library
 
 License:       MIT
@@ -20,6 +20,8 @@ Source0:       https://files.pythonhosted.org/packages/source/g/%{modname}/%{mod
 
 # https://github.com/gevent/gevent/pull/979
 Patch1:        0001-always-obey-GEVENT_NO_CFFI_BUILD.patch
+Patch2:        0002-gevent.pywsgi-Much-improved-handling-of-chunk-traile.patch
+Patch3:        0003-Avoid-printing-a-TypeError-traceback-on-certain-type.patch
 
 BuildRequires: c-ares-devel
 BuildRequires: libev-devel
@@ -82,7 +84,7 @@ Features include:
 Python 3 version.
 
 %prep
-%autosetup -n %{modname}-%{version}
+%autosetup -p1 -n %{modname}-%{version}
 # Remove bundled libraries
 rm -r deps
 # Upstream intentionally includes C extension sources in the built package, 
@@ -126,6 +128,12 @@ find %{buildroot} -name '*.so' -exec chmod 755 {} ';'
 %{python3_sitearch}/%{modname}*
 
 %changelog
+* Tue Nov 21 2023 Brian C. Lane <bcl@redhat.com> - 1.2.2-5
+- Avoid printing TypeError traceback
+- gevent.pywsgi: Much improved handling of chunk trailers
+  Backport fix for CVE-2023-41419
+  Resolves: RHEL-17078
+
 * Mon Apr 29 2019 Brian C. Lane <bcl@redhat.com> - 1.2.2-4
 - Remove the python2 files before running py3_install
   Resolves: rhbz#1704111
